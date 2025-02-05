@@ -42,7 +42,7 @@ app.get("/",(req,res)=>{
 app.use(errorHandler)
 // "mongodb+srv://mohitchh_:mohit07@cluster0.3mpjocd.mongodb.net/?retryWrites=true&w=majority&appName=cluster0"
 //connect to mongodb and start server
-const port = process.env.PORT || "https://poultrybackend.vercel.app/";
+const port =5000;
 mongoose
     .connect("mongodb+srv://mohitchh_:mohit07@cluster0.3mpjocd.mongodb.net/?retryWrites=true&w=majority&appName=cluster0")
     .then(()=>{
