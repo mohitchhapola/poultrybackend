@@ -40,11 +40,11 @@ app.get("/",(req,res)=>{
 
 //error middleware
 app.use(errorHandler)
-
+// "mongodb+srv://mohitchh_:mohit07@cluster0.3mpjocd.mongodb.net/?retryWrites=true&w=majority&appName=cluster0"
 //connect to mongodb and start server
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || "https://poultrybackend.vercel.app/";
 mongoose
-    .connect(process.env.MONGO_URI)
+    .connect("mongodb+srv://mohitchh_:mohit07@cluster0.3mpjocd.mongodb.net/?retryWrites=true&w=majority&appName=cluster0")
     .then(()=>{
       app.listen(port,()=>{
         console.log(`Server is running on ${port}`);
