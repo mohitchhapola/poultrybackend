@@ -20,6 +20,7 @@ app.use(
   cors({
     origin: ["https://newagro.vercel.app/"],//"http://localhost:3000","192.168.18.93:3000"
     methods: ["POST", "GET","DELETE","PATCH"],
+    allowedHeaders:'*',
     // methods: [userRoute.allMethods],
     credentials: true,
   })
