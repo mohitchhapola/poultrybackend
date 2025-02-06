@@ -18,11 +18,10 @@ app.use(express.urlencoded({extended:false}))
 app.use(bodyParser.json())
 app.use(
   cors({
-    origin: '*',//"http://localhost:3000","192.168.18.93:3000"
-    methods: ["POST", "GET","DELETE","PATCH"],
-    allowedHeaders:'*',
-    // methods: [userRoute.allMethods],
-    credentials: true,
+    origin: ['http://localhost:3000','https://newagro.vercel.app'], // Allow your frontend's origin
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'], // Allowed methods
+    allowedHeaders:['Content-Type', 'Authorization'], // Allowed headers
+    credentials: true, // Allow credentials (cookies, authorization headers)
   })
 );
 
@@ -41,11 +40,11 @@ app.get("/",(req,res)=>{
 
 //error middleware
 app.use(errorHandler)
-// "mongodb+srv://mohitchh_:mohit07@cluster0.3mpjocd.mongodb.net/?retryWrites=true&w=majority&appName=cluster0"
+
 //connect to mongodb and start server
 const port =5000;
 mongoose
-    .connect("mongodb+srv://mohitchh_:mohit07@cluster0.3mpjocd.mongodb.net/?retryWrites=true&w=majority&appName=cluster0")
+    .connect(process.env.DB_URL)
     .then(()=>{
       app.listen(port,()=>{
         console.log(`Server is running on ${port}`);
