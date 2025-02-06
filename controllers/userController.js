@@ -33,11 +33,13 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const salt = await bcrypt.genSalt(12);
   const hashedPassword = await bcrypt.hash(password, salt);
+  console.log("Password before hashing:", password);
+console.log("Password after hashing:", hashedPassword);
 
   const user = await User.create({
     username,
     email,
-    password,
+    password: hashedPassword,
   });
 
   const token = generateToken(user._id);
@@ -51,11 +53,12 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    const { _id, username, email, photo, phone, bio } = user;
+    const { _id, username, email, photo, password, phone, bio } = user;
     res.status(201).json({
       _id,
       username,
       email,
+      password,
       photo,
       phone,
       bio,
@@ -69,60 +72,58 @@ const registerUser = asyncHandler(async (req, res) => {
 
 // Login User
 const loginUser = asyncHandler(async (req, res) => {
-
   const { email, password } = req.body;
+  console.log("Login Inputs:", { email, password });
 
   if (!email || !password) {
     res.status(400);
     throw new Error("Please add email and password");
   }
 
+  // Check if user exists
   const user = await User.findOne({ email });
-
+  console.log("User Found:", user);
 
   if (!user) {
     res.status(400);
     throw new Error("User not found, please sign up");
   }
 
-// console.log("Password====",password);
-// console.log("UserPassword====",user.password);
+  // Compare passwords
+  const passwordIsCorrect = await bcrypt.compareSync(password, user.password);
+  console.log("Password Comparison:", passwordIsCorrect);
 
-
-const passwordIsCorrect = password != user.password ? false : true;
-
-
-//   const passwordIsCorrect = await bcrypt.compareSync(password, user.password);  
-
-
-  const token = generateToken(user._id);
-
-  if (passwordIsCorrect) {
-    res.cookie("token", token, {
-      path: "/",
-      httpOnly: true,
-      expires: new Date(Date.now() + 1000 * 86400), // 1 day
-      sameSite: "none",
-      secure: true,
-    });
-  }
-
-  if (user && passwordIsCorrect) {
-    const { _id, username, email, photo, phone, bio } = user;
-    res.status(200).json({
-      _id,
-      username,
-      email,
-      photo,
-      phone,
-      bio,
-      token,
-    });
-  } else {
+  if (!passwordIsCorrect) {
     res.status(400);
     throw new Error("Invalid email or password");
   }
+
+  // Generate token
+  const token = generateToken(user._id);
+  console.log("Generated Token:", token);
+
+  // Set cookie if password matches
+  res.cookie("token", token, {
+    path: "/",
+    httpOnly: true,
+    expires: new Date(Date.now() + 1000 * 86400), // 1 day
+    sameSite: "none",
+    secure: true,
+  });
+
+  // Send response
+  const { _id, username, photo, phone, bio } = user;
+  res.status(200).json({
+    _id,
+    username,
+    email,
+    photo,
+    phone,
+    bio,
+    token,
+  });
 });
+
 
 // Logout User
 const logout = asyncHandler(async (req, res) => {
